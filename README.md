@@ -1,5 +1,5 @@
 [ParsingCSV_TSD.xlsx](https://github.com/user-attachments/files/20033540/ParsingCSV_TSD.xlsx)
-[ParsingCSV_TSD.xlsx](https://github.com/user-attachments/files/20033539/ParsingCSV_TSD.xlsx)
+
 # Generic CSV File Parsing Logic in C++
 
 This project provides a robust CSV parser written in C++ that handles:
