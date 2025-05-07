@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 
 #include <fstream>
 
@@ -12,7 +12,7 @@ using namespace std;
 
 using CSVRow = vector<pair<string, string>>;         // One row of data, stored as key-value pairs (header and value )
 
-using CSVData = vector<CSVRow>;             // Entire file, made up of multiple CSVRow entries which are key-value pairs
+using CSVData = vector<CSVRow>;                        // Entire file, made up of multiple CSVRow entries which are key-value pairs
 
 string RemoveMultLine(const string& input) {                       //  newlines with spaces only if the previous character wasn’t already a space.
 
@@ -20,8 +20,8 @@ string RemoveMultLine(const string& input) {                       //  newlines 
 
     bool prevSpace = false;                                  //flag to avoid inserting multiple spaces in a row.
 
-    for (char c : input) {
-
+    for (size_t i = 0; i < input.length(); ++i) {
+        char c = input[i];
         if (c == '\n' || c == '\r') {   // checking for newline and carriage return
 
             if (!prevSpace) {
@@ -38,7 +38,12 @@ string RemoveMultLine(const string& input) {                       //  newlines 
 
             output += c;
 
-            prevSpace = (c == ' '); //shorthand assignment same like if-esle stament -sets the value of prevSpace to true if c is a space, and false otherwise
+            if (c == ' ') {
+                prevSpace = true;
+            }
+            else {
+                prevSpace = false;
+            }
 
         }
 
@@ -118,7 +123,7 @@ vector<string> ParsingCSVLine(ifstream& file, char delimiter, char Text_Qualifie
 
         else {
 
-            token += '\n'; // Preserve newline inside quoted field
+            token += '\n'; // Preserve newline inside quoted field then this passed to remomutiline() to remove \n
 
         }
 
@@ -149,9 +154,10 @@ CSVData parseCSV(const string& filepath, char delimiter, char Text_Qualifier) {
 
     // Read the header row
 
-    vector<string> headers;
+    vector<string> headers;  //At this point, headers is an empty vector: headers.empty() == true.
 
-    while (file && headers.empty()) {
+    while (file && headers.empty())   
+    {
 
         headers = ParsingCSVLine(file, delimiter, Text_Qualifier);
 
@@ -165,7 +171,7 @@ CSVData parseCSV(const string& filepath, char delimiter, char Text_Qualifier) {
 
             headers.end());                                                                                         // lambda function here takes input parameter h , retuns true if h is empty or h is white space (isspace)
 
-    }
+    }                             //headers.empty() becomes false because ParsingCSVLine(...) populates it with actual header names from "header"   variable.
 
     if (headers.empty()) {
 
@@ -177,11 +183,11 @@ CSVData parseCSV(const string& filepath, char delimiter, char Text_Qualifier) {
 
     // Read each record
 
-    while (file.peek() != EOF) {                        //file.peek() reads the next character in the file without removing it from the input stream.
-
+    while (file.peek() != EOF)                         //file.peek() reads the next character in the file without removing it from the input stream.
+    {
         vector<string> values = ParsingCSVLine(file, delimiter, Text_Qualifier);
 
-        if (values.empty()) continue;       //If the line is empty or doesn't contain any values, just skip it and move on to the next line in the file
+        if (values.empty()) continue;                //If the line is empty or doesn't contain any values, just skip it and move on to the next line in the file
 
         CSVRow row;
 
@@ -189,7 +195,7 @@ CSVData parseCSV(const string& filepath, char delimiter, char Text_Qualifier) {
 
             string value = (i < values.size() ? values[i] : "");     //If i is less than values.size(), then use values[i] ,Else, use an empty string ""
 
-            row.emplace_back(headers[i], value); //headers[i] is the 'key' and value is the 'value ' ,Construct the object in place inside the vector, avoiding unnecessary copying. eg 
+            row.emplace_back(headers[i], value); //headers[i] is the 'key' and value is the 'value ' ,emplace_back(a, b)> Directly constructs the object inside the vector using constructor arguments a, b
 
         }
 
@@ -231,8 +237,16 @@ int main(int argc, char* argv[]) {
     CSVData csv = parseCSV(filename, delimiter, Text_Qualifier); // Calls parseCSV() with the file path.
 
     // Print parsed CSV content , csv is a vector<CSVRow> — a list of all CSV rows
+    
+    /* csv = {
+        { { "Name", "Alice" }, { "Age", "30" } },
+        { {"Name", "Bob"}, {"Age", "25"} }
+    }
+*/
+
 
     for (const auto& row : csv) {                      // auto - findes type automatically , and &- giving a reference to the original data
+                                            //row is a vector of pairs like: {("Name", "Alice"), ("Age", "30"), ("City", "New York")}
 
         for (const auto& pair : row) {                   //Each row is a vector of pairs.
 
